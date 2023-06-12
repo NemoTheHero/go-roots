@@ -18,7 +18,8 @@ func Handler() {
 		v1.GET("albums", controller.GetAlbums)
 		v1.POST("albums", controller.PostAlbums)
 		v1.GET("albums/:id", controller.GetAlbumByID)
-		v1.POST("dynamoTest", dao.AmazonDao)
+		v1.POST("createTable", dao.AmazonDao)
+		v1.POST("addItem", dao.AddItem)
 	}
 
 	err := router.Run("localhost:8080")
