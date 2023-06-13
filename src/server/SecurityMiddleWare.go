@@ -3,6 +3,9 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 	"log"
+	"net/http"
+	"roots/src/services"
+	"strings"
 	"time"
 )
 
@@ -13,7 +16,14 @@ func SecurityMiddleWare(c *gin.Context) {
 	c.Set("example", "12345")
 
 	// before request
-
+	//if not valid
+	authHeader := c.GetHeader("Authorization")
+	splitToken := strings.Split(authHeader, "Bearer ")
+	jwtToken := splitToken[1]
+	if services.VerifyJwt(jwtToken) {
+		c.IndentedJSON(http.StatusUnauthorized, authHeader)
+		c.Abort()
+	}
 	c.Next()
 
 	// after request
