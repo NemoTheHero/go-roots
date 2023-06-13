@@ -11,13 +11,6 @@ import (
 	"strconv"
 )
 
-type Item struct {
-	Year   int
-	Title  string
-	Plot   string
-	Rating float64
-}
-
 func AddItem(c *gin.Context) {
 	// Initialize a session that the SDK will use to load
 	// credentials from the shared credentials file ~/.aws/credentials
@@ -29,10 +22,10 @@ func AddItem(c *gin.Context) {
 	// Create DynamoDB client
 	svc := dynamodb.New(sess)
 	item := Item{
-		Year:   2016,
-		Title:  "The Small New Movie",
-		Plot:   "Nothing happens at all.",
-		Rating: 0.0,
+		Year:   2013,
+		Title:  "Bad Movie",
+		Plot:   "Something Happens.",
+		Rating: 2.0,
 	}
 
 	av, err := dynamodbattribute.MarshalMap(item)

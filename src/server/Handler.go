@@ -20,6 +20,8 @@ func Handler() {
 		v1.GET("albums/:id", controller.GetAlbumByID)
 		v1.POST("createTable", dao.AmazonDao)
 		v1.POST("addItem", dao.AddItem)
+		v1.GET("getMovies", dao.GetMovies)
+		v1.GET("getAbove4", dao.GetAbove4)
 	}
 
 	err := router.Run("localhost:8080")
