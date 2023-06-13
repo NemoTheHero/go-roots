@@ -22,6 +22,7 @@ func Handler() {
 		v1.POST("addItem", dao.AddItem)
 		v1.GET("getMovies", dao.GetMovies)
 		v1.GET("getAbove4", dao.GetAbove4)
+		v1.PUT("updateMovie", dao.UpdateItem)
 	}
 
 	err := router.Run("localhost:8080")

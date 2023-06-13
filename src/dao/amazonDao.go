@@ -115,6 +115,8 @@ func GetAbove4(c *gin.Context) {
 	}
 	numItems := 0
 
+	var results []Item
+
 	for _, i := range result.Items {
 		item := Item{}
 		err = dynamodbattribute.UnmarshalMap(i, &item)
@@ -123,11 +125,13 @@ func GetAbove4(c *gin.Context) {
 			log.Fatalf("Got error unmarshalling: %s", err)
 		}
 		numItems++
+		results = append(results, item)
 		fmt.Println("Title: ", item.Title)
 		fmt.Println("Rating:", item.Rating)
 		fmt.Println("Year:", item.Year)
 		fmt.Println()
 	}
+	c.IndentedJSON(http.StatusOK, results)
 
 	fmt.Println("Found", numItems, "movie(s) with a rating above", minRating, "in", year)
 
@@ -179,4 +183,48 @@ func GetMovies(c *gin.Context) {
 	fmt.Println("Title: ", item.Title)
 	fmt.Println("Plot:  ", item.Plot)
 	fmt.Println("Rating:", item.Rating)
+}
+
+func UpdateItem(c *gin.Context) {
+	// Initialize a session that the SDK will use to load
+	// credentials from the shared credentials file ~/.aws/credentials
+	// and region from the shared configuration file ~/.aws/config.
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable,
+	}))
+
+	// Create DynamoDB client
+	svc := dynamodb.New(sess)
+	// Update item in table Movies
+	tableName := "Movies"
+	movieName := "Bad Movie"
+	movieYear := "2013"
+	movieRating := "6"
+
+	input := &dynamodb.UpdateItemInput{
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":r": {
+				N: aws.String(movieRating),
+			},
+		},
+		TableName: aws.String(tableName),
+		Key: map[string]*dynamodb.AttributeValue{
+			"Year": {
+				N: aws.String(movieYear),
+			},
+			"Title": {
+				S: aws.String(movieName),
+			},
+		},
+		ReturnValues:     aws.String("UPDATED_NEW"),
+		UpdateExpression: aws.String("set Rating = :r"),
+	}
+
+	_, err := svc.UpdateItem(input)
+	if err != nil {
+		log.Fatalf("Got error calling UpdateItem: %s", err)
+	}
+
+	fmt.Println("Successfully updated '" + movieName + "' (" + movieYear + ") rating to " + movieRating)
+
 }
